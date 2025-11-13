@@ -21,6 +21,7 @@ def connect(wifi_obj, ssid, password, timeout=10):
             return True
     return False
 
+
 def read_temp_send_data(timer):
     global sensor_temp
 
@@ -30,8 +31,8 @@ def read_temp_send_data(timer):
     temperature = 27 - (voltage - 0.706) / 0.001721
 
     mqtt.publish(TOPIC, str(temperature).encode())
-    
-    
+
+
 # ---------- Periodic Temperature Sender ----------
 temp_timer = Timer()
 temp_timer.init(period=2000, mode=Timer.PERIODIC, callback=read_temp_send_data)
@@ -51,13 +52,13 @@ wifi.active(True)
 
 if connect(wifi, ssid, password):
     print("Wifi connected")
-    
+
     mqtt = umqtt.MQTTClient(
-        client_id= b"publish", server=HOSTNAME.encode(), port=PORT, keepalive=7000
+        client_id=b"publish", server=HOSTNAME.encode(), port=PORT, keepalive=7000
     )
 
     mqtt.connect()
-    
+
     while True:
         time.sleep(1)
 else:
