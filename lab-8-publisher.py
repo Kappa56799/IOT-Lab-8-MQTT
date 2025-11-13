@@ -2,7 +2,6 @@ import umqtt.robust as umqtt
 from network import WLAN
 from machine import ADC, Timer
 import time
-import socket
 
 
 # ---------- Wi-Fi Connection ----------
@@ -22,6 +21,7 @@ def connect(wifi_obj, ssid, password, timeout=10):
     return False
 
 
+# ---------- Periodic Temperature Sender ----------
 def read_temp_send_data(timer):
     global sensor_temp
 
@@ -44,21 +44,26 @@ HOSTNAME = "172.20.10.14"
 PORT = 1883
 TOPIC = "temp/pico"
 
+# ---------- Temperature Sensor ----------
 sensor_temp = ADC(4)  # Internal temperature sensor
 conversion_factor = 0.706  # Approximate reference voltage
 
+# ---------- Wi-Fi Connection ----------
 wifi = WLAN(WLAN.IF_STA)
 wifi.active(True)
 
+# ---------- Connect to Wi-Fi and MQTT Broker ----------
 if connect(wifi, ssid, password):
     print("Wifi connected")
 
+    # Connect to MQTT broker
     mqtt = umqtt.MQTTClient(
         client_id=b"publish", server=HOSTNAME.encode(), port=PORT, keepalive=7000
     )
 
     mqtt.connect()
 
+    # ---------- Periodic Temperature Sender ----------
     while True:
         time.sleep(1)
 else:
